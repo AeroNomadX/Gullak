@@ -3,10 +3,6 @@
 Gullak (Hindi for "piggy bank") is a Python-based cash flow manager for university students living on a fixed monthly allowance. It records allowance and expenses, validates every entry, calculates the balance and spending statistics, and shows everything on a web dashboard.
 
 Built as an MCA academic project at Chandigarh University.
-
-![Gullak dashboard](screenshots/dashboard.png)
-_Add a screenshot of your dashboard at `screenshots/dashboard.png`._
-
 ---
 
 ## Features
