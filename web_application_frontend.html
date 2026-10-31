@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gullak Student Finance | University Cash Flow & Analytics</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gullak: {
+                            gold: '#FFB800',
+                            goldHover: '#E5A400',
+                            goldLight: '#FFF8E6',
+                            goldDark: '#D49600',
+                            navy: '#0F172A',
+                            slate: '#1E293B',
+                            slateLight: '#334155',
+                            cardBg: '#FFFFFF',
+                            bodyBg: '#F8FAFC',
+                            accentGreen: '#10B981',
+                            accentRed: '#EF4444'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8FAFC;
+        }
+        .gullak-gradient-bg {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        }
+        .gullak-gold-card {
+            background: linear-gradient(135deg, #FFB800 0%, #F5A623 100%);
+        }
+        .gold-glow {
+            box-shadow: 0 10px 25px -5px rgba(255, 184, 0, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F1F5F9;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- TOP NAVIGATION HEADER -->
+    <header class="gullak-gradient-bg text-white sticky top-0 z-40 border-b border-slate-700/50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-gullak-gold to-yellow-300 flex items-center justify-center text-gullak-navy text-xl font-black shadow-lg">
+                    <i class="fa-solid fa-piggy-bank"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-xl font-extrabold tracking-tight text-white">Gullak</span>
+                        <span class="bg-gullak-gold text-gullak-navy text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Student</span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium">Campus Cash Flow & Wealth Hub</p>
+                </div>
+            </div>
+
+            <!-- Quick Action & Student Info -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <button onclick="openTransactionModal('Income')" class="hidden sm:inline-flex items-center space-x-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-3.5 py-2 rounded-xl text-xs font-semibold transition">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>+ Add Allowance</span>
+                </button>
+                <button onclick="openTransactionModal('Expense')" class="bg-gullak-gold hover:bg-gullak-goldHover text-gullak-navy px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-md gold-glow transition flex items-center space-x-2">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>+ Log Expense</span>
+                </button>
+
+                <!-- Profile Dropdown indicator -->
+                <div class="flex items-center space-x-2.5 border-l border-slate-700 pl-3.5 ml-1">
+                    <div class="w-9 h-9 rounded-full bg-slate-700 border-2 border-gullak-gold flex items-center justify-center text-gullak-gold font-bold text-sm">
+                        HR
+                    </div>
+                    <div class="hidden lg:block text-left">
+                        <div class="text-xs font-bold text-white leading-tight">Hritik Sharma</div>
+                        <div class="text-[10px] text-slate-400">MCA 2nd Sem • CU</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- WELCOME BANNER & DATE DISPLAY -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-gullak-navy flex items-center gap-2">
+                    <span>Good Day, Hritik!</span>
+                    <span class="text-xl">👋</span>
+                </h1>
+                <p class="text-sm text-slate-500 mt-1">Here is your financial cash flow & expenditure breakdown for this month.</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="bg-slate-100 px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 flex items-center space-x-2">
+                    <i class="fa-regular fa-calendar-alt text-gullak-goldDark"></i>
+                    <span id="currentDateStr">October 2026</span>
+                </div>
+                <button onclick="togglePythonModal()" class="bg-slate-900 hover:bg-slate-800 text-gullak-gold border border-gullak-gold/30 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition shadow-sm">
+                    <i class="fa-brands fa-python text-sm"></i>
+                    <span>Python Syllabus Mapping</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- KEY METRICS CARDS (4 COLUMNS) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Card 1: Total Pocket Money / Balance -->
+            <div class="gullak-gold-card p-5 rounded-2xl text-slate-900 shadow-md gold-glow relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute -right-4 -bottom-4 text-slate-900/10 text-8xl font-black pointer-events-none">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between text-slate-900/80 text-xs font-bold uppercase tracking-wider">
+                        <span>Current Pocket Money</span>
+                        <i class="fa-solid fa-coins text-slate-900/70"></i>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-extrabold mt-2 tracking-tight" id="displayBalance">
+                        ₹4,250.00
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-900/15 flex items-center justify-between text-xs font-medium">
+                    <span class="text-slate-900/80">Monthly Allowance:</span>
+                    <span class="font-bold" id="displayAllowance">₹10,000.00</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Total Spent This Month -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
+                        <span>Total Spent (Oct)</span>
+                        <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-arrow-up-right-dots"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-gullak-navy mt-2 tracking-tight" id="displayExpenses">
+                        ₹5,750.00
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="text-slate-500">Daily Average (NumPy):</span>
+                    <span class="font-bold text-rose-600" id="displayDailyAvg">₹205.35 / day</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Recommended Daily Limit -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
+                        <span>Safe Daily Budget</span>
+                        <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-2 tracking-tight" id="displaySafeDaily">
+                        ₹265.00
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="text-slate-500">Days Remaining:</span>
+                    <span class="font-bold text-slate-700" id="daysLeftStr">16 Days</span>
+                </div>
+            </div>
+
+            <!-- Card 4: Savings Goal Target -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
+                        <span>Laptop Fund Goal</span>
+                        <div class="w-7 h-7 rounded-lg bg-amber-50 text-gullak-goldDark flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline space-x-1 mt-2">
+                        <span class="text-2xl font-extrabold text-gullak-navy" id="displaySavingsGoal">₹15,000</span>
+                        <span class="text-xs text-slate-400 font-medium">/ ₹25,000</span>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        <div class="bg-gullak-gold h-full rounded-full" style="width: 60%;"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-[11px] text-slate-500 mt-1.5 font-medium">
+                        <span>60% Reached</span>
+                        <span class="text-gullak-goldDark font-bold">₹10k to go</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ANALYTICS & CHARTS SECTION (2 COLUMNS) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Chart: Expenditure Trend (Line Chart) -->
+            <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
+                    <div>
+                        <h2 class="text-base font-bold text-gullak-navy flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-gullak-goldDark"></i>
+                            <span>Weekly & Daily Spending Trend</span>
+                        </h2>
+                        <p class="text-xs text-slate-500">Track day-to-day cash flow spikes across recent weeks</p>
+                    </div>
+                    <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-medium">
+                        <button onclick="updateTrendPeriod('weekly')" id="btnTrendWeekly" class="px-3 py-1 rounded-lg bg-white text-gullak-navy font-bold shadow-xs">Weekly</button>
+                        <button onclick="updateTrendPeriod('daily')" id="btnTrendDaily" class="px-3 py-1 rounded-lg text-slate-500 hover:text-slate-800">Daily</button>
+                    </div>
+                </div>
+                <div class="pt-4 flex-grow min-h-[260px] relative">
+                    <canvas id="expenditureTrendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Chart: Category Breakdown (Doughnut Chart) -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                <div class="pb-3 border-b border-slate-100">
+                    <h2 class="text-base font-bold text-gullak-navy flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-gullak-goldDark"></i>
+                        <span>Category Expenses</span>
+                    </h2>
+                    <p class="text-xs text-slate-500">Pandas Dataframe & Matplotlib output</p>
+                </div>
+                <div class="my-4 relative flex justify-center items-center h-[200px]">
+                    <canvas id="categoryBreakdownChart"></canvas>
+                </div>
+                <div id="categoryLegend" class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-100 font-medium text-slate-600">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- AI SMART ADVICE & PEER INSIGHTS SECTION -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <!-- Advice Card 1 -->
+            <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent p-4 sm:p-5 rounded-2xl border border-amber-200/80 flex items-start space-x-3.5">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center text-lg shrink-0 mt-0.5">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-900">Budget Alert</h3>
+                    <p class="text-xs text-amber-800 mt-1 leading-relaxed">
+                        You spent <span class="font-bold underline">42% of your weekly budget</span> on Canteen & Food Delivery! Try cooking at hostel or eating at mess to save ~₹800 this week.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Advice Card 2 -->
+            <div class="bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-4 sm:p-5 rounded-2xl border border-emerald-200/80 flex items-start space-x-3.5">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-700 flex items-center justify-center text-lg shrink-0 mt-0.5">
+                    <i class="fa-solid fa-users text-emerald-600"></i>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-900">Peer Comparison</h3>
+                    <p class="text-xs text-emerald-800 mt-1 leading-relaxed">
+                        Great job! You saved <span class="font-bold">14% more</span> than average MCA students this month. Your hostel rent & utilities are well optimized.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Advice Card 3 -->
+            <div class="bg-gradient-to-br from-indigo-500/10 via-indigo-500/5 to-transparent p-4 sm:p-5 rounded-2xl border border-indigo-200/80 flex items-start space-x-3.5">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-700 flex items-center justify-center text-lg shrink-0 mt-0.5">
+                    <i class="fa-solid fa-piggy-bank text-indigo-600"></i>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900">Micro-Savings Tip</h3>
+                    <p class="text-xs text-indigo-800 mt-1 leading-relaxed">
+                        Investing <span class="font-bold">₹500/month</span> from your remaining balance into an Index SIP can yield ~₹38,000 by graduation!
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- STOCKS & INVESTMENT HUB FOR STUDENTS -->
+        <div class="bg-gullak-navy rounded-2xl p-5 sm:p-6 text-white border border-slate-800 shadow-xl space-y-5">
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-4 gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gullak-gold text-gullak-navy flex items-center justify-center text-xl font-black">
+                        <i class="fa-solid fa-chart-line-up"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <span>Student Investment & Stock Hub</span>
+                            <span class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-md font-semibold">Simulated Live</span>
+                        </h2>
+                        <p class="text-xs text-slate-400">Learn micro-investing, SIPs & ETF tracking for early wealth generation</p>
+                    </div>
+                </div>
+                
+                <div class="text-xs text-slate-400 flex items-center space-x-2 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/60">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Live Market Feed Sim</span>
+                </div>
+            </div>
+
+            <!-- Mandatory Legal Disclaimer Banner -->
+            <div class="bg-amber-500/10 border border-amber-500/30 text-amber-200/90 p-3.5 rounded-xl text-xs flex items-start space-x-3">
+                <i class="fa-solid fa-shield-exclamation text-gullak-gold text-base shrink-0 mt-0.5"></i>
+                <div>
+                    <span class="font-bold text-gullak-gold">Educational Purpose Disclaimer:</span> This hub provides simulated market tracking for university learning. Investments in securities market are subject to market risks. Read all related documents carefully before investing. Past performance is not indicative of future returns.
+                </div>
+            </div>
+
+            <!-- Stocks Grid & Micro Investment Suggestions -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Simulated Live Stocks Ticker -->
+                <div class="lg:col-span-2 space-y-3">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Top Recommended Student ETFs & Indices</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="stockWidgetContainer">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Micro Investment Ideas for Students -->
+                <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-3">
+                    <h3 class="text-xs font-bold text-gullak-gold uppercase tracking-wider flex items-center justify-between">
+                        <span>Beginner SIP Ideas (₹500/mo)</span>
+                        <i class="fa-solid fa-seedling"></i>
+                    </h3>
+                    <ul class="space-y-2.5 text-xs text-slate-300">
+                        <li class="flex items-start space-x-2">
+                            <i class="fa-solid fa-circle-check text-emerald-400 text-[10px] mt-1"></i>
+                            <div>
+                                <strong class="text-white">Nifty 50 Index Mutual Funds:</strong> Low-cost diversification across India's top 50 companies. Perfect for long-term targets.
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fa-solid fa-circle-check text-emerald-400 text-[10px] mt-1"></i>
+                            <div>
+                                <strong class="text-white">Sovereign Gold Bonds / Gold ETFs:</strong> Protect your savings against inflation with zero physical storage risks.
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fa-solid fa-circle-check text-emerald-400 text-[10px] mt-1"></i>
+                            <div>
+                                <strong class="text-white">Nifty IT ETF:</strong> Focused tech sector exposure suitable for CS/MCA students tracking IT industry growth.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CASH FLOW LOGGER & TRANSACTIONS TABLE -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 space-y-4">
+            
+            <!-- Table Header Controls -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                    <h2 class="text-base font-bold text-gullak-navy flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-gullak-goldDark"></i>
+                        <span>Recent Cash Flow & Transactions</span>
+                    </h2>
+                    <p class="text-xs text-slate-500">Add, filter and search your daily college expenses and allowances</p>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Search Input -->
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="searchInput" onkeyup="filterTransactions()" placeholder="Search transactions..." class="pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-gullak-gold w-40 sm:w-48">
+                    </div>
+
+                    <!-- Category Filter -->
+                    <select id="categoryFilter" onchange="filterTransactions()" class="py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-gullak-gold text-slate-700">
+                        <option value="ALL">All Categories</option>
+                        <option value="Food">Food & Canteen</option>
+                        <option value="Books">Books & Printing</option>
+                        <option value="Hostel">Hostel & Rent</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Income">Allowance / Income</option>
+                    </select>
+
+                    <button onclick="openTransactionModal('Expense')" class="bg-gullak-gold hover:bg-gullak-goldHover text-gullak-navy font-bold px-3 py-1.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>New Entry</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200/80">
+                            <th class="py-3 px-4">Date</th>
+                            <th class="py-3 px-4">Type</th>
+                            <th class="py-3 px-4">Category</th>
+                            <th class="py-3 px-4">Description / Note</th>
+                            <th class="py-3 px-4 text-right">Amount (₹)</th>
+                            <th class="py-3 px-4 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionTableBody" class="text-xs divide-y divide-slate-100 font-medium">
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+                <span id="showingCount">Showing 0 entries</span>
+                <span class="text-slate-400 italic">Auto-calculates remaining balance dynamically</span>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200/80 mt-10 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-2">
+                <div class="w-6 h-6 rounded-md bg-gullak-gold flex items-center justify-center text-gullak-navy text-xs font-bold">G</div>
+                <span class="font-bold text-gullak-navy">Gullak Student Finance</span>
+                <span>© 2026 MCA Academic Project</span>
+            </div>
+            <div class="flex items-center space-x-4 text-slate-400">
+                <span class="hover:text-slate-600 cursor-pointer" onclick="togglePythonModal()">Python Syllabus Mapping</span>
+                <span>•</span>
+                <span class="hover:text-slate-600 cursor-pointer">Simulated Financial Analytics</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ADD TRANSACTION MODAL -->
+    <div id="transactionModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-gullak-navy" id="modalTitle">Log Cash Flow Entry</h3>
+                <button onclick="closeTransactionModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="transactionForm" onsubmit="handleFormSubmit(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Entry Type</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="border border-slate-200 rounded-xl p-2.5 flex items-center justify-center space-x-2 cursor-pointer hover:bg-slate-50">
+                            <input type="radio" name="type" value="Expense" id="typeExpense" checked onchange="updateModalCategoryOptions()">
+                            <span class="font-bold text-rose-600">Expense (-)</span>
+                        </label>
+                        <label class="border border-slate-200 rounded-xl p-2.5 flex items-center justify-center space-x-2 cursor-pointer hover:bg-slate-50">
+                            <input type="radio" name="type" value="Income" id="typeIncome" onchange="updateModalCategoryOptions()">
+                            <span class="font-bold text-emerald-600">Allowance / Income (+)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Amount (₹)</label>
+                    <input type="number" step="0.01" id="formAmount" required placeholder="e.g. 250" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-gullak-gold">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Category</label>
+                    <select id="formCategory" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-gullak-gold text-slate-700">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Description / Note</label>
+                    <input type="text" id="formDesc" required placeholder="e.g. Canteen Lunch & Tea with friends" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-gullak-gold">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Date</label>
+                    <input type="date" id="formDate" required class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-gullak-gold text-slate-700">
+                </div>
+
+                <div class="pt-2 flex items-center justify-end space-x-2">
+                    <button type="button" onclick="closeTransactionModal()" class="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 font-semibold hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-gullak-gold hover:bg-gullak-goldHover text-gullak-navy font-bold rounded-xl gold-glow shadow-sm">Save Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PYTHON SYLLABUS MAPPING MODAL -->
+    <div id="pythonModal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-brands fa-python text-2xl text-gullak-goldDark"></i>
+                    <h3 class="text-base font-bold text-gullak-navy">Python MCA Syllabus Implementation Mapping</h3>
+                </div>
+                <button onclick="togglePythonModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed">
+                This Fintech web application runs with an active Python backend utilizing <strong>NumPy, arrays, Pandas, Matplotlib, and Tkinter</strong>:
+            </p>
+
+            <div class="space-y-4 text-xs">
+                <!-- Library 1: NumPy & Arrays -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                    <div class="font-bold text-gullak-navy text-sm flex items-center space-x-2">
+                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px]">NumPy & Arrays</span>
+                        <span>Array Vectorization & Statistical Aggregation</span>
+                    </div>
+                    <pre class="bg-slate-900 text-amber-300 p-3 rounded-lg mt-2 font-mono text-[11px] overflow-x-auto">
+import array
+import numpy as np
+
+# Convert expense floats to C-style double array
+py_arr = array.array('d', [180.0, 350.0, 60.0, 280.0])
+
+# Transform array directly into NumPy vector for statistics
+np_vector = np.array(py_arr)
+mean_spend = np.mean(np_vector)
+std_spend = np.std(np_vector)</pre>
+                </div>
+
+                <!-- Library 2: Pandas -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                    <div class="font-bold text-gullak-navy text-sm flex items-center space-x-2">
+                        <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]">Pandas</span>
+                        <span>DataFrame Filtering & Category-wise Sums</span>
+                    </div>
+                    <pre class="bg-slate-900 text-emerald-300 p-3 rounded-lg mt-2 font-mono text-[11px] overflow-x-auto">
+import pandas as pd
+
+df = pd.DataFrame(TRANSACTIONS)
+expenses_df = df[df['type'] == 'Expense']
+
+# Grouping category sums for chart engine
+category_summary = expenses_df.groupby('category')['amount'].sum().to_dict()</pre>
+                </div>
+
+                <!-- Library 3: Matplotlib -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                    <div class="font-bold text-gullak-navy text-sm flex items-center space-x-2">
+                        <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[10px]">Matplotlib</span>
+                        <span>Server-side Dynamic PNG Chart Rendering</span>
+                    </div>
+                    <pre class="bg-slate-900 text-purple-300 p-3 rounded-lg mt-2 font-mono text-[11px] overflow-x-auto">
+import matplotlib.pyplot as plt
+import io, base64
+
+fig, ax = plt.subplots(figsize=(6, 3))
+ax.bar(cat_names, cat_values, color=['#FFB800', '#3B82F6'])
+buf = io.BytesIO()
+plt.savefig(buf, format='png')
+img_b64 = base64.b64encode(buf.getvalue()).decode('utf-8')</pre>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex justify-end">
+                <button onclick="togglePythonModal()" class="px-4 py-2 bg-slate-900 text-gullak-gold font-bold text-xs rounded-xl">Close Window</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC & APPLICATION ENGINE -->
+    <script>
+        let transactions = [];
+        let simulatedStocks = [
+            { symbol: 'NIFTY 50 ETF', price: 242.50, change: '+1.45%', positive: true, note: 'Top 50 Companies' },
+            { symbol: 'NIFTY IT ETF', price: 38.20, change: '-0.35%', positive: false, note: 'Tech Sector Basket' },
+            { symbol: 'GOLDBEES ETF', price: 68.90, change: '+0.80%', positive: true, note: 'Gold Inflation Hedge' }
+        ];
+
+        let trendChartInstance = null;
+        let categoryChartInstance = null;
+
+        const categoryColors = {
+            'Food': '#FFB800',
+            'Books': '#3B82F6',
+            'Hostel': '#8B5CF6',
+            'Entertainment': '#EC4899',
+            'Transport': '#10B981',
+            'Income': '#059669',
+            'Other': '#64748B'
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            document.getElementById('currentDateStr').innerText = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            document.getElementById('formDate').value = today.toISOString().split('T')[0];
+
+            fetchTransactions();
+            renderStockWidgets();
+            initTrendChart('weekly');
+
+            setInterval(simulateStockTick, 4000);
+        });
+
+        // Fetch transactions from Python Backend
+        async function fetchTransactions() {
+            try {
+                const res = await fetch('/api/transactions');
+                transactions = await res.json();
+                renderTransactionsTable(transactions);
+                fetchPythonAnalytics();
+            } catch(e) {
+                console.warn("Running in local fallback mode (Backend disconnected).");
+                recalculateLocalFallback();
+            }
+        }
+
+        // Fetch Analytics computed by Python (NumPy/Pandas/Matplotlib)
+        async function fetchPythonAnalytics() {
+            try {
+                const res = await fetch('/api/analytics');
+                const data = await res.json();
+
+                document.getElementById('displayBalance').innerText = `₹${data.balance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                document.getElementById('displayAllowance').innerText = `₹${data.total_income.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                document.getElementById('displayExpenses').innerText = `₹${data.total_expense.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                document.getElementById('displayDailyAvg').innerText = `₹${data.daily_avg.toFixed(2)} / day`;
+                
+                let daysLeft = 4;
+                let safeDaily = data.balance > 0 ? (data.balance / daysLeft) : 0;
+                document.getElementById('displaySafeDaily').innerText = `₹${safeDaily.toFixed(2)}`;
+
+                renderCategoryChart(data.category_summary);
+            } catch(e) {
+                recalculateLocalFallback();
+            }
+        }
+
+        function recalculateLocalFallback() {
+            let totalIncome = 0;
+            let totalExpenses = 0;
+            let catTotals = {};
+
+            transactions.forEach(t => {
+                if (t.type === 'Income') totalIncome += t.amount;
+                else {
+                    totalExpenses += t.amount;
+                    catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
+                }
+            });
+
+            let currentBalance = totalIncome - totalExpenses;
+            let dailyAvg = totalExpenses > 0 ? (totalExpenses / 28) : 0;
+            let safeDaily = currentBalance > 0 ? (currentBalance / 4) : 0;
+
+            document.getElementById('displayBalance').innerText = `₹${currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('displayAllowance').innerText = `₹${totalIncome.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('displayExpenses').innerText = `₹${totalExpenses.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('displayDailyAvg').innerText = `₹${dailyAvg.toFixed(2)} / day`;
+            document.getElementById('displaySafeDaily').innerText = `₹${safeDaily.toFixed(2)}`;
+
+            renderCategoryChart(catTotals);
+        }
+
+        function renderCategoryChart(catTotals) {
+            const ctx = document.getElementById('categoryBreakdownChart').getContext('2d');
+            let labels = Object.keys(catTotals);
+            let dataValues = Object.values(catTotals);
+            let backgroundColors = labels.map(l => categoryColors[l] || '#64748B');
+
+            if (categoryChartInstance) categoryChartInstance.destroy();
+
+            categoryChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataValues,
+                        backgroundColor: backgroundColors,
+                        borderWidth: 2,
+                        borderColor: '#FFFFFF',
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '72%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            const legendContainer = document.getElementById('categoryLegend');
+            legendContainer.innerHTML = '';
+            labels.forEach((label, idx) => {
+                const color = backgroundColors[idx];
+                const amt = dataValues[idx];
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-1.5 truncate">
+                        <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${color}"></span>
+                        <span class="truncate">${label}</span>
+                    </div>
+                    <span class="font-bold text-slate-800">₹${amt}</span>
+                `;
+                legendContainer.appendChild(item);
+            });
+        }
+
+        function initTrendChart(period = 'weekly') {
+            const ctx = document.getElementById('expenditureTrendChart').getContext('2d');
+            let labels = period === 'weekly' 
+                ? ['Week 1', 'Week 2', 'Week 3', 'Week 4']
+                : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+            let dataValues = period === 'weekly' ? [1250, 1420, 1890, 1190] : [180, 350, 60, 280, 120, 450, 210];
+
+            if (trendChartInstance) trendChartInstance.destroy();
+
+            trendChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Expenditure (₹)',
+                        data: dataValues,
+                        borderColor: '#FFB800',
+                        backgroundColor: 'rgba(255, 184, 0, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#0F172A',
+                        pointBorderColor: '#FFB800'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function updateTrendPeriod(period) {
+            document.getElementById('btnTrendWeekly').className = period === 'weekly' ? "px-3 py-1 rounded-lg bg-white text-gullak-navy font-bold shadow-xs" : "px-3 py-1 rounded-lg text-slate-500 hover:text-slate-800";
+            document.getElementById('btnTrendDaily').className = period === 'daily' ? "px-3 py-1 rounded-lg bg-white text-gullak-navy font-bold shadow-xs" : "px-3 py-1 rounded-lg text-slate-500 hover:text-slate-800";
+            initTrendChart(period);
+        }
+
+        function renderStockWidgets() {
+            const container = document.getElementById('stockWidgetContainer');
+            container.innerHTML = '';
+            simulatedStocks.forEach(stock => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/70 flex flex-col justify-between';
+                const changeClass = stock.positive ? 'text-emerald-400' : 'text-rose-400';
+                const icon = stock.positive ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-xs text-slate-200">${stock.symbol}</span>
+                        <span class="text-[10px] ${changeClass} font-bold flex items-center gap-1">
+                            <i class="fa-solid ${icon}"></i>
+                            <span>${stock.change}</span>
+                        </span>
+                    </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <span class="text-lg font-extrabold text-white">₹${stock.price.toFixed(2)}</span>
+                        <span class="text-[10px] text-slate-400 font-medium">${stock.note}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function simulateStockTick() {
+            simulatedStocks.forEach(stock => {
+                let delta = (Math.random() - 0.48) * 0.8;
+                stock.price = Math.max(10, stock.price + delta);
+                stock.positive = delta >= 0;
+                stock.change = (delta >= 0 ? '+' : '') + (delta * 0.4).toFixed(2) + '%';
+            });
+            renderStockWidgets();
+        }
+
+        function renderTransactionsTable(data) {
+            const tbody = document.getElementById('transactionTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition';
+                const isIncome = t.type === 'Income';
+                const typeBadge = isIncome
+                    ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Allowance</span>`
+                    : `<span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Expense</span>`;
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-slate-500 whitespace-nowrap">${t.date}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">${typeBadge}</td>
+                    <td class="py-3 px-4 whitespace-nowrap font-semibold text-slate-700">${t.category}</td>
+                    <td class="py-3 px-4 text-slate-600 max-w-xs truncate">${t.desc}</td>
+                    <td class="py-3 px-4 text-right font-bold ${isIncome ? 'text-emerald-600' : 'text-slate-800'}">${isIncome ? '+' : '-'}₹${t.amount.toFixed(2)}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="deleteTransaction(${t.id})" class="text-slate-400 hover:text-rose-500 transition px-1">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('showingCount').innerText = `Showing ${data.length} entries`;
+        }
+
+        function filterTransactions() {
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const catVal = document.getElementById('categoryFilter').value;
+
+            const filtered = transactions.filter(t => {
+                const matchesSearch = t.desc.toLowerCase().includes(searchVal) || t.category.toLowerCase().includes(searchVal);
+                const matchesCat = (catVal === 'ALL') || (t.category === catVal);
+                return matchesSearch && matchesCat;
+            });
+
+            renderTransactionsTable(filtered);
+        }
+
+        async function deleteTransaction(id) {
+            try {
+                await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
+                fetchTransactions();
+            } catch(e) {
+                transactions = transactions.filter(t => t.id !== id);
+                renderTransactionsTable(transactions);
+                recalculateLocalFallback();
+            }
+        }
+
+        function openTransactionModal(defaultType = 'Expense') {
+            document.getElementById('transactionModal').classList.remove('hidden');
+            if (defaultType === 'Income') document.getElementById('typeIncome').checked = true;
+            else document.getElementById('typeExpense').checked = true;
+            updateModalCategoryOptions();
+        }
+
+        function closeTransactionModal() {
+            document.getElementById('transactionModal').classList.add('hidden');
+            document.getElementById('transactionForm').reset();
+        }
+
+        function updateModalCategoryOptions() {
+            const isIncome = document.getElementById('typeIncome').checked;
+            const catSelect = document.getElementById('formCategory');
+            catSelect.innerHTML = isIncome 
+                ? `<option value="Income">Pocket Money / Allowance</option>`
+                : ['Food', 'Books', 'Hostel', 'Entertainment', 'Transport', 'Other'].map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const isIncome = document.getElementById('typeIncome').checked;
+            const payload = {
+                amount: parseFloat(document.getElementById('formAmount').value),
+                category: document.getElementById('formCategory').value,
+                desc: document.getElementById('formDesc').value,
+                date: document.getElementById('formDate').value,
+                type: isIncome ? 'Income' : 'Expense'
+            };
+
+            try {
+                await fetch('/api/transactions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                fetchTransactions();
+            } catch(e) {
+                transactions.unshift({ ...payload, id: Date.now() });
+                renderTransactionsTable(transactions);
+                recalculateLocalFallback();
+            }
+            closeTransactionModal();
+        }
+
+        function togglePythonModal() {
+            document.getElementById('pythonModal').classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
